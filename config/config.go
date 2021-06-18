@@ -1,6 +1,7 @@
 package config
 
 import (
+	"github.com/joho/godotenv"
 	"log"
 	"os"
 	"strconv"
@@ -26,6 +27,13 @@ type DbConfig struct {
 
 type ServerConfig struct {
 	Host string
+}
+
+func init() {
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
 }
 
 func LoadRedisConfig() *RedisConfig {
