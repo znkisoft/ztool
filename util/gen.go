@@ -5,11 +5,11 @@ import (
 	"github.com/teris-io/shortid"
 )
 
-func genShortId() (string, error) {
+func GenShortId() (string, error) {
 	return shortid.Generate()
 }
 
-func genUUID() string {
+func GenUUID() string {
 	u := uuid.New()
 	return u.String()
 }
