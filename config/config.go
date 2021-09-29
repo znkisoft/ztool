@@ -1,7 +1,7 @@
 package config
 
 import (
-	"github.com/joho/godotenv"
+	"github.com/go-playground/validator/v10"
 	"log"
 	"os"
 	"strconv"
@@ -13,27 +13,31 @@ type Configurations struct {
 }
 
 type RedisConfig struct {
-	Address  string
-	Password string
-	DB       int
+	Address  string `validate:"required"`
+	Password string `validate:"required"`
+	DB       int    `validate:"required"`
 }
 
 type DbConfig struct {
-	Name     string
-	User     string
-	Password string
-	Host     string
+	Name     string `validate:"required"`
+	User     string `validate:"required"`
+	Password string `validate:"required"`
+	Host     string `validate:"required"`
 }
 
 type ServerConfig struct {
-	Host string
+	Host string `validate:"required,ip"`
 }
 
+type OSSConfig struct {
+	AccessKey string `validate:"required"`
+	SecretKey string `validate:"required"`
+}
+
+var validate *validator.Validate
+
 func init() {
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatal("Error loading .env file")
-	}
+	validate = validator.New()
 }
 
 func LoadRedisConfig() *RedisConfig {
@@ -41,28 +45,50 @@ func LoadRedisConfig() *RedisConfig {
 	if err != nil {
 		log.Fatalf("redis env variable is missing, %s", err)
 	}
-	return &RedisConfig{
+	var redisConfig = &RedisConfig{
 		Address:  os.Getenv("REDIS_ADDRESS"),
 		Password: os.Getenv("REDIS_PASSWORD"),
 		DB:       db,
 	}
+	validateConfig(redisConfig)
+	return redisConfig
 }
 
 func LoadServerConfig() *ServerConfig {
 	host := os.Getenv("ECS_SERVER_HOST")
 	if host == "" {
-		host = ""
+		log.Fatalf("host info is missing.")
 	}
-	return &ServerConfig{
+	var serverConfig = &ServerConfig{
 		Host: host,
 	}
+	validateConfig(serverConfig)
+	return serverConfig
 }
 
 func LoadDbConfig() *DbConfig {
-	return &DbConfig{
+	var dbConfig = &DbConfig{
 		Name:     os.Getenv("DB_NAME"),
 		User:     os.Getenv("DB_USER"),
 		Password: os.Getenv("DB_PWD"),
 		Host:     os.Getenv("DB_HOST"),
+	}
+	validateConfig(dbConfig)
+	return dbConfig
+}
+
+func LoadOSSConfig() *OSSConfig {
+	var ossConfig = &OSSConfig{
+		AccessKey: os.Getenv("OSS_ACCESS_KEY"),
+		SecretKey: os.Getenv("OSS_SECRET_KEY"),
+	}
+	validateConfig(ossConfig)
+	return ossConfig
+}
+
+func validateConfig(config interface{}) {
+	err := validate.Struct(config)
+	if err != nil {
+		log.Fatalf(">>> Error: %s:\n", err.Error())
 	}
 }
