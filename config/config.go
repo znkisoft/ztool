@@ -2,6 +2,7 @@ package config
 
 import (
 	"github.com/go-playground/validator/v10"
+	"github.com/joho/godotenv"
 	"log"
 	"os"
 	"strconv"
@@ -37,6 +38,10 @@ type OSSConfig struct {
 var validate *validator.Validate
 
 func init() {
+	err := godotenv.Load(".env")
+	if err != nil {
+		log.Fatalf("Error loading .env file")
+	}
 	validate = validator.New()
 }
 
