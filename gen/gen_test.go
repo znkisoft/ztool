@@ -16,7 +16,7 @@ func Test_genUUID(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := GenUUID()
+			got := UUID()
 			fmt.Println(got)
 			if len(got) != 36 {
 				t.Errorf("gen uuid error")
@@ -36,10 +36,10 @@ func Test_genShortId(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := GenShortId()
+			got, err := ShortId()
 			fmt.Println(got)
 			if (err != nil) != tt.wantErr {
-				t.Errorf("GenShortId() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("ShortId() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 		})
