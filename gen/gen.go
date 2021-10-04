@@ -10,6 +10,5 @@ func ShortId() (string, error) {
 }
 
 func UUID() string {
-	u := uuid.New()
-	return u.String()
+	return uuid.NewString()
 }
